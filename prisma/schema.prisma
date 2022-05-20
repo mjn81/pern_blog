@@ -1,5 +1,7 @@
 //******** AUTO GENERATED FILE, DO NOT EDIT.  *********
 
+//******** AUTO GENERATED FILE, DO NOT EDIT.  *********
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -12,9 +14,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  name  String?
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  username    String    @db.VarChar(80)
+  password    String    @db.VarChar(100)
+  description String?   @db.Text
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  author      Author?
+  comments    Comment[]
+  likes       Like[]
+}
+
+model Author {
+  id         Int       @id @default(autoincrement())
+  first_name String
+  last_name  String
+  address    String    @db.Text
+  card_code  String    @db.VarChar(16)
+  birthdate  DateTime  @db.Date
+  user       User      @relation(fields: [user_id], references: [id])
+  user_id    Int       @unique
+  admin      Admin?
+  post       Post[]
+  images     Gallery[]
+}
+
+model Admin {
+  id      Int    @id @default(autoincrement())
+  author  Author @relation(fields: [user_id], references: [id])
+  user_id Int    @unique
+}
+
+model Post {
+  id         Int        @id @default(autoincrement())
+  title      String     @db.VarChar(150)
+  image      Gallery    @relation(fields: [image_id], references: [id])
+  image_id   Int        @unique
+  content    String?    @db.Text
+  author     Author     @relation(fields: [author_id], references: [id])
+  author_id  Int
+  comments   Comment[]
+  likes      Like[]
+  category   Category[]
+  status     Status     @default(DRAFT)
+  create_at  DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+}
+
+enum Status {
+  DRAFT
+  ARCHIVED
+  PUBLISHED
+}
+
+model Gallery {
+  id          Int      @id @default(autoincrement())
+  title       String?  @db.VarChar(150)
+  description String?  @db.Text
+  image       String   @db.Text
+  author      Author   @relation(fields: [author_id], references: [id])
+  author_id   Int
+  post        Post[]
+  create_at   DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  title      String    @db.VarChar(150)
+  content    String    @db.Text
+  user       User      @relation(fields: [user_id], references: [id])
+  user_id    Int       @unique
+  post       Post      @relation(fields: [post_id], references: [id])
+  post_id    Int
+  parent_id  Int?
+  parent     Comment?  @relation("REPLY", fields: [parent_id], references: [id])
+  replies    Comment[] @relation("REPLY")
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+}
+
+model Like {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  post       Post     @relation(fields: [post_id], references: [id])
+  post_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Category {
+  id           Int        @id @default(autoincrement())
+  name         String     @db.VarChar(200)
+  post         Post[]
+  category_id  Int?
+  category     Category?  @relation("SUB_CATEGORY", fields: [category_id], references: [id])
+  sub_category Category[] @relation("SUB_CATEGORY")
+  creaetd_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+
 }
