@@ -18,7 +18,7 @@ model User {
   id          Int       @id @default(autoincrement())
   email       String    @unique
   username    String    @db.VarChar(80)
-  password    String    @db.VarChar(100)
+  password    String    @db.VarChar(250)
   description String?   @db.Text
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
@@ -115,5 +115,11 @@ model Category {
   sub_category Category[] @relation("SUB_CATEGORY")
   creaetd_at   DateTime   @default(now())
   updated_at   DateTime   @updatedAt
+}
 
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

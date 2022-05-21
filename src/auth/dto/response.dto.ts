@@ -8,4 +8,7 @@ export class ResponseDto {
 
   @Expose()
   username: string;
+
+  @Expose()
+  token: string;
 }
