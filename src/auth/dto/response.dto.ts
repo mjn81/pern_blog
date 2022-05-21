@@ -11,4 +11,7 @@ export class ResponseDto {
 
   @Expose()
   token: string;
+
+  @Expose()
+  refreshToken: string;
 }

@@ -116,10 +116,3 @@ model Category {
   creaetd_at   DateTime   @default(now())
   updated_at   DateTime   @updatedAt
 }
-
-model RefreshToken {
-  id         Int      @id @default(autoincrement())
-  token      String   @db.Text
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
