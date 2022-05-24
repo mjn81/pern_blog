@@ -15,3 +15,14 @@ export class ResponseDto {
   @Expose()
   refreshToken: string;
 }
+
+export class DeleteResponseDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  email: string;
+
+  @Expose()
+  username: string;
+}

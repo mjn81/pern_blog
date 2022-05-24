@@ -1,4 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import * as argon from 'argon2';
+
 import { PrismaService } from 'src/prisma';
 import { UserDto } from '../dto';
 
@@ -7,11 +9,22 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(data: UserDto) {
-    const user = await this.findByEmail(data.email);
+    const { password, email } = data;
+    const user = await this.findByEmail(email);
     if (!!user) {
       throw new ConflictException('a user with this email already exists');
     }
-    return this.prisma.user.create({ data });
+    const hashedPassword = await this.hashPassword(password);
+    return this.prisma.user.create({
+      data: {
+        password: hashedPassword,
+        ...data,
+      },
+    });
+  }
+
+  async hashPassword(password: string) {
+    return await argon.hash(password);
   }
 
   findAll() {
