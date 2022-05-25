@@ -50,4 +50,60 @@ export class AdminService {
       },
     });
   }
+
+  async findAll() {
+    return this.prismaService.admin.findMany({
+      include: {
+        author: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
+
+  async delete(id: number) {
+    return this.prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async update(id: number, data: AuthorDto) {
+    const { user, birthdate } = data;
+    const hashPassword = await this.userService.hashPassword(user.password);
+    delete data.user, data.birthdate, user.password;
+    return this.prismaService.admin.update({
+      where: {
+        id,
+      },
+      data: {
+        author: {
+          update: {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            card_code: data.card_code,
+            address: data.address,
+
+            birthdate: new Date(birthdate),
+            user: {
+              update: {
+                ...user,
+                password: hashPassword,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        author: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
 }

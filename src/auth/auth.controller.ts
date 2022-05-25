@@ -9,7 +9,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { Serializer } from 'src/interceptor';
-import { AuthorDto, AuthorService, UserDto } from 'src/user';
+import { AuthorDto, AuthorService, AdminService, UserDto } from 'src/user';
 import { AuthService } from './service';
 import { AuthDto, DeleteResponseDto, ResponseDto } from './dto';
 import { UserRole } from 'src/constants';
@@ -17,8 +17,9 @@ import { UserRole } from 'src/constants';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private authService: AuthService,
+    private readonly authService: AuthService,
     private readonly authorService: AuthorService,
+    private readonly adminService: AdminService,
   ) {}
 
   @Serializer(ResponseDto)
@@ -58,5 +59,16 @@ export class AuthController {
   @Post('/createAdmin')
   createAdmin(@Body() data: AuthorDto) {
     return this.authService.createSuperUser(data, UserRole.ADMIN);
+  }
+
+  @Serializer(DeleteResponseDto)
+  @Delete('/deleteAdmin/:id')
+  deleteAdmin(@Param('id') id: string) {
+    return this.adminService.delete(parseInt(id));
+  }
+
+  @Patch('/updateAdmin/:id')
+  updateAdmin(@Param('id') id: string, @Body() data: AuthorDto) {
+    return this.adminService.update(parseInt(id), data);
   }
 }
