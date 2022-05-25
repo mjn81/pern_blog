@@ -12,6 +12,7 @@ import { Serializer } from 'src/interceptor';
 import { AuthorDto, AuthorService, UserDto } from 'src/user';
 import { AuthService } from './service';
 import { AuthDto, DeleteResponseDto, ResponseDto } from './dto';
+import { UserRole } from 'src/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -37,7 +38,7 @@ export class AuthController {
   @Post('/createAuthor')
   @HttpCode(200)
   createAuthor(@Body() data: AuthorDto) {
-    return this.authService.createAuthor(data);
+    return this.authService.createSuperUser(data, UserRole.Author);
   }
 
   @Serializer(DeleteResponseDto)
@@ -49,5 +50,13 @@ export class AuthController {
   @Patch('/updateAuthor/:id')
   updateAuthor(@Param('id') id: string, @Body() data: AuthorDto) {
     return this.authorService.update(parseInt(id), data);
+  }
+
+  // TODO : guarding to make sure only admin can add admin
+
+  @Serializer(ResponseDto)
+  @Post('/createAdmin')
+  createAdmin(@Body() data: AuthorDto) {
+    return this.authService.createSuperUser(data, UserRole.ADMIN);
   }
 }

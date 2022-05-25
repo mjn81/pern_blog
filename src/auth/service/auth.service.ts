@@ -7,7 +7,13 @@ import {
 
 import * as argon from 'argon2';
 
-import { UserDto, AuthorDto, UserService, AuthorService } from 'src/user';
+import {
+  UserDto,
+  AuthorDto,
+  UserService,
+  AuthorService,
+  AdminService,
+} from 'src/user';
 import { AuthDto } from '../dto';
 import { TokenService } from './token.service';
 import { UserRole } from 'src/constants';
@@ -17,6 +23,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly authorService: AuthorService,
+    private readonly adminService: AdminService,
     private readonly tokenService: TokenService,
   ) {}
 
@@ -37,34 +44,49 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException("such user doesn't exist");
     }
-    const isAuthor = this.authorService.findByUserId(user.id);
-    if (!!isAuthor) {
-      role = UserRole.Author;
-    }
     const verify = await argon.verify(user.password, password);
     if (!verify) {
       throw new UnauthorizedException('password is not correct');
     }
     const auth = await this.tokenService.createToken(user.id, user.email);
+
+    const author = await this.authorService.findByUserId(user.id);
+    if (!!author) {
+      role = UserRole.Author;
+    }
+
+    const admin = await this.adminService.findByUserId(user.id);
+    if (!!admin) {
+      role = UserRole.ADMIN;
+    }
+
     return {
       role,
       ...auth,
     };
   }
 
-  async createAuthor(data: AuthorDto) {
+  async createSuperUser(data: AuthorDto, role: UserRole) {
     const { email } = data.user;
     const user = await this.userService.findByEmail(email);
     if (user) {
       throw new BadRequestException('this user already exists');
     }
-    const author = await this.authorService.createAuthor(data);
-    const auth = await this.tokenService.createToken(
-      author.id,
-      author.user.email,
-    );
+    let sUser = null;
+    let auth = null;
+    if (role === UserRole.Author) {
+      sUser = await this.authorService.createAuthor(data);
+      auth = this.tokenService.createToken(sUser.id, sUser.email);
+    } else if (role === UserRole.ADMIN) {
+      sUser = await this.adminService.createAdmin(data);
+      auth = await this.tokenService.createToken(
+        sUser.id,
+        sUser.author.user.email,
+      );
+    }
     return {
-      ...author,
+      role,
+      ...sUser,
       ...auth,
     };
   }

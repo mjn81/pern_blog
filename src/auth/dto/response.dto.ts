@@ -1,6 +1,9 @@
 import { Expose } from 'class-transformer';
 export class ResponseDto {
   @Expose()
+  role: string;
+
+  @Expose()
   id: number;
 
   @Expose()

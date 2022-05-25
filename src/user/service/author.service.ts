@@ -56,11 +56,11 @@ export class AuthorService {
     });
   }
 
-  async findByUserId(userId: number) {
-    return this.prismaService.author.findMany({
+  async findByUserId(id: number) {
+    return this.prismaService.author.findFirst({
       where: {
         user: {
-          id: userId,
+          id,
         },
       },
       include: {
