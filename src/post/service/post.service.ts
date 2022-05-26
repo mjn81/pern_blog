@@ -4,8 +4,4 @@ import { PrismaService } from 'src/prisma';
 @Injectable()
 export class PostService {
   constructor(private readonly prismaService: PrismaService) {}
-
-  // async addPost() {
-  //     return
-  // }
 }

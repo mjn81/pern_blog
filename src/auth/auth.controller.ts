@@ -36,13 +36,6 @@ export class AuthController {
     return this.authService.signIn(data);
   }
 
-  @UseGuards(AdminGuard)
-  @Serializer(DeleteResponseDto)
-  @Delete('/delete/:id')
-  deleteAuthor(@Param('id') id: string) {
-    return this.authService.delete(parseInt(id));
-  }
-
   @UseGuards(AuthorGuard)
   @Serializer(ResponseDto)
   @Post('/createAuthor')
@@ -51,6 +44,7 @@ export class AuthController {
     return this.authService.createSuperUser(data, UserRole.AUTHOR);
   }
 
+  @UseGuards(AuthorGuard)
   @Patch('/updateAuthor/:id')
   updateAuthor(@Param('id') id: string, @Body() data: AuthorDto) {
     return this.authorService.update(parseInt(id), data);
@@ -67,5 +61,12 @@ export class AuthController {
   @Patch('/updateAdmin/:id')
   updateAdmin(@Param('id') id: string, @Body() data: AuthorDto) {
     return this.adminService.update(parseInt(id), data);
+  }
+
+  @UseGuards(AdminGuard)
+  @Serializer(DeleteResponseDto)
+  @Delete('/delete/:id')
+  deleteAuthor(@Param('id') id: string) {
+    return this.authService.delete(parseInt(id));
   }
 }
