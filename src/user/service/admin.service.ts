@@ -48,6 +48,13 @@ export class AdminService {
           },
         },
       },
+      include: {
+        author: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
   }
 

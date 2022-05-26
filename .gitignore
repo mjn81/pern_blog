@@ -26,6 +26,10 @@ env
 REST_CLIENT
 *.REST
 
+#public
+
+public
+
 # IDEs and editors
 /.idea
 .project
