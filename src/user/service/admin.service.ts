@@ -63,14 +63,6 @@ export class AdminService {
     });
   }
 
-  async delete(id: number) {
-    return this.prismaService.user.delete({
-      where: {
-        id,
-      },
-    });
-  }
-
   async update(id: number, data: AuthorDto) {
     const { user, birthdate } = data;
     const hashPassword = await this.userService.hashPassword(user.password);

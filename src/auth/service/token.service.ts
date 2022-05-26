@@ -32,8 +32,8 @@ export class TokenService {
         },
       );
       return {
-        token,
-        refreshToken,
+        access_token: token,
+        refresh_toke: refreshToken,
       };
     } catch (err) {
       console.log(err);

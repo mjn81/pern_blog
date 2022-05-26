@@ -15,6 +15,7 @@ export class UserService {
       throw new ConflictException('a user with this email already exists');
     }
     const hashedPassword = await this.hashPassword(password);
+    delete data.password;
     return this.prisma.user.create({
       data: {
         password: hashedPassword,

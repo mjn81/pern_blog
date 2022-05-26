@@ -95,17 +95,4 @@ export class AuthorService {
       },
     });
   }
-
-  async delete(id: number) {
-    const author = await this.findOne(id);
-    if (!author) {
-      throw new NotFoundException("this author doesn't exist");
-    }
-
-    return this.prismaService.user.delete({
-      where: {
-        id: author.user.id,
-      },
-    });
-  }
 }
